@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin | Apex Cyberlink</title>
+  <link rel="icon" href="favicon.jpeg">
+  <link rel="stylesheet" href="css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="index.html"><img src="favicon.jpeg" alt=""><div><strong>APEX CYBERLINK</strong><span>ADMIN</span></div></a><a class="btn btn-gold" href="index.html">View site</a></div></header>
+  <section>
+    <div class="wrap" style="max-width:760px">
+      <div id="lock" class="panel form">
+        <h1>Edit your website</h1>
+        <p class="muted">This page changes the words, prices, phone number and services. The starting PIN is 1234. Change it after you log in.</p>
+        <label>PIN<input id="pin" type="password"></label>
+        <button class="btn btn-dark" id="unlock" type="button">Open editor</button>
+        <p id="lock-msg" class="muted"></p>
+      </div>
+      <form id="editor" class="panel form" hidden>
+        <h1>Website editor</h1>
+        <p class="muted">Preview saves on this browser only. To make the change show for every visitor, download the file and replace <b>data/content.json</b> in GitHub. Netlify will update the live site after that upload.</p>
+        <label>Business name<input name="businessName"></label>
+        <label>Tagline<input name="tagline"></label>
+        <label>Phone<input name="phone"></label>
+        <label>WhatsApp number, country code, no plus<input name="whatsapp"></label>
+        <label>Email<input name="email"></label>
+        <label>Working hours<input name="hours"></label>
+        <label>Home headline<input name="heroTitle"></label>
+        <label>Home text<textarea name="heroText" rows="3"></textarea></label>
+        <label>About text<textarea name="aboutText" rows="4"></textarea></label>
+        <label>Mobile Money name<input name="momoName"></label>
+        <label>Mobile Money number<input name="momoNumber"></label>
+        <label>New admin PIN<input name="adminPin"></label>
+        <h2>Services</h2>
+        <div id="service-fields"></div>
+        <h2>Portfolio</h2>
+        <div id="project-fields"></div>
+        <button class="btn btn-dark" type="submit">Save preview on this browser</button>
+        <button class="btn btn-gold" id="download" type="button">Download content.json</button>
+        <button class="btn btn-line" id="clear" type="button">Clear preview</button>
+        <p id="saved" class="muted"></p>
+      </form>
+    </div>
+  </section>
+  <script>
+    let content = null;
+    const lock = document.querySelector("#lock");
+    const editor = document.querySelector("#editor");
+    async function load() {
+      const res = await fetch("data/content.json", { cache: "no-store" });
+      const fileData = await res.json();
+      const draft = JSON.parse(localStorage.getItem("apex-content-draft") || "null");
+      content = draft || fileData;
+    }
+    function field(label, name, value) {
+      return `<label>${label}<input data-name="${name}" value="${String(value || "").replace(/"/g, """)}"></label>`;
+    }
+    function fill() {
+      ["businessName","tagline","phone","whatsapp","email","hours","heroTitle","heroText","aboutText","momoName","momoNumber","adminPin"].forEach((key) => {
+        const el = editor.elements[key];
+        if (el) el.value = content[key] || "";
+      });
+      document.querySelector("#service-fields").innerHTML = (content.services || []).map((s, i) => `
+        <div class="card">
+          ${field("Service name", "s-name-"+i, s.name)}
+          ${field("Price in GHS", "s-price-"+i, s.price)}
+          <label>Description<textarea data-name="s-text-${i}" rows="2">${s.text || ""}</textarea></label>
+        </div>`).join("");
+      document.querySelector("#project-fields").innerHTML = (content.projects || []).map((p, i) => `
+        <div class="card">
+          ${field("Tag", "p-tag-"+i, p.tag)}
+          ${field("Project name", "p-name-"+i, p.name)}
+          <label>Description<textarea data-name="p-text-${i}" rows="2">${p.text || ""}</textarea></label>
+          ${field("Result", "p-result-"+i, p.result)}
+        </div>`).join("");
+    }
+    function collect() {
+      const next = { ...content };
+      ["businessName","tagline","phone","whatsapp","email","hours","heroTitle","heroText","aboutText","momoName","momoNumber","adminPin"].forEach((key) => {
+        next[key] = editor.elements[key].value.trim();
+      });
+      next.services = (content.services || []).map((s, i) => ({
+        ...s,
+        name: editor.querySelector(`[data-name="s-name-${i}"]`).value.trim(),
+        price: editor.querySelector(`[data-name="s-price-${i}"]`).value.trim(),
+        text: editor.querySelector(`[data-name="s-text-${i}"]`).value.trim()
+      }));
+      next.projects = (content.projects || []).map((p, i) => ({
+        ...p,
+        tag: editor.querySelector(`[data-name="p-tag-${i}"]`).value.trim(),
+        name: editor.querySelector(`[data-name="p-name-${i}"]`).value.trim(),
+        text: editor.querySelector(`[data-name="p-text-${i}"]`).value.trim(),
+        result: editor.querySelector(`[data-name="p-result-${i}"]`).value.trim()
+      }));
+      return next;
+    }
+    document.querySelector("#unlock").onclick = async () => {
+      await load();
+      if (document.querySelector("#pin").value !== String(content.adminPin || "1234")) {
+        document.querySelector("#lock-msg").textContent = "Wrong PIN.";
+        return;
+      }
+      lock.hidden = true;
+      editor.hidden = false;
+      fill();
+    };
+    editor.onsubmit = (e) => {
+      e.preventDefault();
+      content = collect();
+      localStorage.setItem("apex-content-draft", JSON.stringify(content));
+      document.querySelector("#saved").textContent = "Preview saved on this browser. Open the home page to check it. Download the file to publish it for everyone.";
+    };
+    document.querySelector("#download").onclick = () => {
+      content = collect();
+      const blob = new Blob([JSON.stringify(content, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "content.json";
+      a.click();
+    };
+    document.querySelector("#clear").onclick = () => {
+      localStorage.removeItem("apex-content-draft");
+      document.querySelector("#saved").textContent = "Preview cleared. The live file is showing again.";
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "businessName": "Apex Cyberlink",
+  "tagline": "Digital Solutions",
+  "phone": "0552611663",
+  "whatsapp": "233552611663",
+  "email": "apexcyberlinkco@gmail.com",
+  "hours": "Monday to Saturday, 8:00am - 7:00pm",
+  "heroKicker": "DIGITAL BUSINESS SOLUTIONS AGENCY",
+  "heroTitle": "We help local businesses get more customers online",
+  "heroText": "Professional websites, online booking systems, and digital tools that turn visitors into paying customers.",
+  "aboutText": "Apex Cyberlink is a digital business solutions agency based in Ghana. We help business owners move from word-of-mouth to a steady flow of online customers.",
+  "momoNumber": "Add your Mobile Money number",
+  "momoName": "Apex Cyberlink",
+  "adminPin": "1234",
+  "services": [
+    {"name": "Business Website Design", "price": "1,500", "text": "A complete, professional website that presents your business clearly and turns visitors into paying customers.", "points": ["Custom design for your brand", "Mobile-first and fast loading", "Search-engine ready structure"]},
+    {"name": "Landing Pages for Promotions", "price": "800", "text": "High-converting single pages built for product launches, ad campaigns and seasonal promotions.", "points": ["One clear call to action", "Built for social media ad traffic", "Delivered in days, not weeks"]},
+    {"name": "Booking Systems", "price": "2,000", "text": "Online booking for barbers, salons, shops and cafes so customers can reserve a slot any time of day.", "points": ["Customers book without calling", "Automatic WhatsApp alerts", "Fewer missed appointments"]},
+    {"name": "Digital Branding & Setup", "price": "1,200", "text": "Logo, colour system, business profiles and everything you need to look established online.", "points": ["Logo and brand colours", "Google Business profile setup", "Social media pages ready to sell"]}
+  ],
+  "projects": [
+    {"tag": "Restaurant", "name": "Savanna Grill", "text": "Full restaurant website with digital menu, table reservations and online ordering links.", "result": "+42% online orders"},
+    {"tag": "Booking System", "name": "Kingsmen Barbershop", "text": "Appointment booking system with WhatsApp confirmations and automated reminders.", "result": "68 bookings per week"},
+    {"tag": "E-Commerce", "name": "Adom Boutique", "text": "Product showcase store with WhatsApp checkout and a clean catalogue layout.", "result": "3x more enquiries"}
+  ]
+}
